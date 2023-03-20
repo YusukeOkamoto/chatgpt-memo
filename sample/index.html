@@ -5,7 +5,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Amazon EKS で Docker コンテナをデプロイする方法</title>
     <link rel="stylesheet" href="/chatgpt-memo/styles.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
+
+<script>
+  $(document).ready(function () {
+    // コピーボタンのHTMLを追加
+    $('pre').each(function () {
+      $(this).prepend('<button class="copy-btn">コピー</button>');
+    });
+
+    // コピーボタンをクリックしたときの動作
+    $('.copy-btn').on('click', function () {
+      const code = $(this).siblings('code').text();
+      const textarea = $('<textarea></textarea>');
+      textarea.text(code);
+      $('body').append(textarea);
+      textarea.select();
+      document.execCommand('copy');
+      textarea.remove();
+
+      // コピー完了のメッセージ
+      $(this).text('コピー済み');
+      setTimeout(() => {
+        $(this).text('コピー');
+      }, 2000);
+    });
+  });
+</script>
+
 <body>
     <h1>Amazon EKS で Docker コンテナをデプロイする方法</h1>
     <ol>

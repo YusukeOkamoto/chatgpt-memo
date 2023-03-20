@@ -63,3 +63,22 @@ ol, ul {
   margin-bottom: 1.5rem;
   padding-left: 2rem;
 }
+
+/* コピーボタン */
+.copy-btn {
+  background-color: #2196f3;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  position: absolute;
+  right: 1rem;
+  top: 1rem;
+  font-size: 0.8em;
+  transition: background-color 0.2s;
+}
+
+.copy-btn:hover {
+  background-color: #1976d2;
+}
