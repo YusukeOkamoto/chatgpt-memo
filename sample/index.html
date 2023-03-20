@@ -1,16 +1,69 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
 <head>
-	<title>Recommended Service Stack for Deploying a Next.js Application</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Amazon EKS で Docker コンテナをデプロイする方法</title>
 </head>
 <body>
-	<h1>Next.jsアプリケーションのデプロイにおすすめのサービススタック</h1>
-	<ul>
-		<li>Dockerイメージのビルドとホスティングには、Docker HubやAWS ECRなどのコンテナレジストリサービスを使用します。</li>
-		<li>Kubernetesクラスターを構築するには、Google Kubernetes Engine（GKE）、Amazon EKS、Microsoft Azure Kubernetes Service（AKS）などのマネージドKubernetesサービスを使用することをお勧めします。</li>
-		<li>次に、Kubernetesデプロイメント、サービス、Ingressを設定して、アプリケーションを公開します。</li>
-		<li>さらに、デプロイメントのスケーリングや、ロードバランシング、モニタリングなどの追加の設定を行うことができます。</li>
-	</ul>
-	<p>これらのサービススタックを使用することで、Next.jsアプリケーションを簡単かつスケーラブルにデプロイし、公開することができます。</p>
+    <h1>Amazon EKS で Docker コンテナをデプロイする方法</h1>
+    <ol>
+        <li>
+            <p>Dockerfile を用意して、コンテナイメージを作成します。</p>
+            <h3>Dockerfile サンプル:</h3>
+            <pre>
+FROM node:14
+WORKDIR /app
+COPY package*.json ./
+RUN npm install
+COPY . .
+EXPOSE 3000
+CMD ["npm", "start"]
+            </pre>
+            <h3>コマンド:</h3>
+            <pre>
+$ docker build -t my-image .
+            </pre>
+        </li>
+        <li>
+            <p>Amazon ECR にコンテナイメージをプッシュします。</p>
+            <h3>コマンド:</h3>
+            <pre>
+$ aws ecr create-repository --repository-name my-repo
+$ aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 123456789012.dkr.ecr.us-west-2.amazonaws.com
+$ docker tag my-image:latest 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-repo:latest
+$ docker push 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-repo:latest
+            </pre>
+        </li>
+        <li>
+            <p>Kubernetes のマニフェストを作成し、EKS クラスターにデプロイします。</p>
+            <h3>deployment.yaml サンプル:</h3>
+            <pre>
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-deployment
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: my-app
+  template:
+    metadata:
+      labels:
+        app: my-app
+    spec:
+      containers:
+      - name: my-container
+        image: 123456789012.dkr.ecr.us-west-2.amazonaws.com/my-repo:latest
+        ports:
+        - containerPort: 3000
+            </pre>
+            <h3>コマンド:</h3>
+            <pre>
+$ kubectl apply -f deployment.yaml
+            </pre>
+        </li>
+    </ol>
 </body>
 </html>
